@@ -9,7 +9,7 @@
 $ yarn install
 
 # 启动项目
-$ yarn startapp
+$ yarn start
 
 ```
 
