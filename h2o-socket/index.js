@@ -1,6 +1,7 @@
 const Koa = require('koa')
 const route = require('koa-route')
 const kw = require('koa-websocket')
+const config = require('../config/default.config')
 const { getIPAdress } = require('../utils/util')
 
 const app = kw(new Koa())
@@ -35,10 +36,6 @@ app.ws.use(route.all('/service', ctx => {
   })
 }));
 
-let port = 3001
-
-let address = 'http://'+getIPAdress()+':'+port
-
-app.listen(port, () => {
-  console.log('%o WebSocketServer listening on: '+ address,'READY')
+app.listen(config.websocketPort, () => {
+  console.log('%o 【 h2o-socket 】Server listening on: http://'+getIPAdress()+':'+config.websocketPort,'READY')
 });
