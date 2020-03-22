@@ -39,9 +39,9 @@ let goodsList = val => {
 
 let saveGoods = val => {
   return new Promise(async (resolve, reject) => {
-    let {title,price,ship_address,courier_fees,goods_category_id,parameter,srcs} = val
+    let {title,price,ship_address,courier_fees,goods_category_id,parameter,srcs} = val, clothingAmounts=''
     if(!val.id){
-      let id = Util.uuid(), src='', clothingAmounts=''
+      let id = Util.uuid(), src=''
       let insertGoodsSql = `INSERT INTO goods (id,title,price,ship_address,courier_fees,goods_category_id,parameter,create_time) 
   VALUES ("${id}","${title}",${price},"${ship_address}",${courier_fees},${goods_category_id},"${parameter}",NOW());`
       await query(insertGoodsSql).then(res => {}).catch(err => {reject(err)})
@@ -53,32 +53,35 @@ let saveGoods = val => {
         }
       })
       await insertImage(src).then(res => {}).catch(err => {reject(err)})
+    }else{
+      let updateGoodsSql = `UPDATE goods SET title="${title}",price=${price},ship_address="${ship_address}",
+      courier_fees=${courier_fees},goods_category_id=${goods_category_id},parameter="${parameter}" 
+      WHERE id="${val.id}";`
+      await query(updateGoodsSql).then(res => {}).catch(err => {reject(err)})
       if(goods_category_id == CATEGORY.clothing) {
-        let insertTypeSql = `INSERT INTO goods_type (goods_id,category_id,part_id,gender) 
-    VALUES ("${id}",${goods_category_id},${val.part_id},${val.gender})`
-        await query(insertTypeSql).then(res => {}).catch(err => {reject(err)})
-        val.clothing_amounts.forEach((item, index) => {
-          if(index == val.clothing_amounts.length-1){
-            clothingAmounts+=`("${id}",${item.amount},"${item.color}","${item.size}");`
-          }else{
-            clothingAmounts+=`("${id}",${item.amount},"${item.color}","${item.size}"),`
-          }
-        })
-        let insertAmountSql = `INSERT INTO goods_amount (goods_id,amount,color,size) 
-      VALUES ${clothingAmounts}`
-        await query(insertAmountSql).then(res => {}).catch(err => {reject(err)})
+        let deleteAmountsSql = `DELETE FROM goods_amount WHERE goods_id="${val.id}";`
+        await query(deleteAmountsSql).then(res => {}).catch(err => reject(err))
+        let deleteTypeSql = `DELETE FROM goods_type WHERE goods_id="${val.id}";`
+        await query(deleteTypeSql).then(res => {}).catch(err => reject(err))
       }
+    }
+    if(goods_category_id == CATEGORY.clothing) {
+      let insertTypeSql = `INSERT INTO goods_type (goods_id,category_id,part_id,gender) 
+    VALUES ("${id}",${goods_category_id},${val.part_id},${val.gender})`
+      await query(insertTypeSql).then(res => {}).catch(err => {reject(err)})
+      val.clothing_amounts.forEach((item, index) => {
+        if(index == val.clothing_amounts.length-1){
+          clothingAmounts+=`("${id}",${item.amount},"${item.color}","${item.size}");`
+        }else{
+          clothingAmounts+=`("${id}",${item.amount},"${item.color}","${item.size}"),`
+        }
+      })
+      let insertAmountSql = `INSERT INTO goods_amount (goods_id,amount,color,size) 
+      VALUES ${clothingAmounts}`
+      await query(insertAmountSql).then(res => {}).catch(err => {reject(err)})
     }
     resolve({})
   })
-
-  // let updateSql = `UPDATE goods SET title=${title},
-  // price=${price},
-  // ship_address=${ship_address},
-  // courier_fees=${courier_fees},
-  // goods_category_id=${goods_category_id},
-  // parameter=${parameter}
-  // WHERE id=${val.id};`
 }
 
 let insertImage = val => {
