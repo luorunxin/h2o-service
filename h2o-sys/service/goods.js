@@ -98,9 +98,55 @@ let getTypesList = val => {
   return query(selectTypesList)
 }
 
+let getGoodsById = val => {
+  return new Promise(async (resolve, reject) => {
+    let selectGoodsSql = `SELECT * FROM goods WHERE id="${val.id}";`
+    await query(selectGoodsSql).then(async res => {
+      res = res[0]
+      res.payment_number = 100
+      res.monthly_sales = 1000
+      let selectGoodsImagesSql = `SELECT * FROM goods_images WHERE goods_id="${val.id}";`
+      await query(selectGoodsImagesSql).then(images => {
+        res.images = images
+      }).catch(err => {
+        reject(err)
+      })
+      let selectGoodsAmountsSql = `SELECT * FROM goods_amount WHERE goods_id="${val.id}";`
+      await query(selectGoodsAmountsSql).then(amounts => {
+        res.amounts = amounts
+      }).catch(err => {
+        reject(err)
+      })
+      let selectGoodsTypesSql = `SELECT * FROM goods_type WHERE goods_id="${val.id}";`
+      await query(selectGoodsTypesSql).then(type => {
+        res.type = type
+      }).catch(err => {
+        reject(err)
+      })
+      resolve(res)
+    }).catch(err => reject(err))
+  })
+}
+
+let deleteGoodsById = val => {
+  return new Promise(async (resolve, reject) => {
+    let deleteGoodsSql = `DELETE FROM goods WHERE id="${val.id}";`
+    await query(deleteGoodsSql).then(res => {}).catch(err => reject(err))
+    let deleteAmountsSql = `DELETE FROM goods_amount WHERE goods_id="${val.id}";`
+    await query(deleteAmountsSql).then(res => {}).catch(err => reject(err))
+    let deleteImagesSql = `DELETE FROM goods_images WHERE goods_id="${val.id}";`
+    await query(deleteImagesSql).then(res => {}).catch(err => reject(err))
+    let deleteTypeSql = `DELETE FROM goods_type WHERE goods_id="${val.id}";`
+    await query(deleteTypeSql).then(res => {}).catch(err => reject(err))
+    resolve()
+  })
+}
+
 module.exports = {
   goodsList,
   saveGoods,
   getCategoryList,
-  getTypesList
+  getTypesList,
+  getGoodsById,
+  deleteGoodsById
 }
