@@ -66,13 +66,13 @@ let getDutes = val => {
     let getDutesSql = `SELECT * FROM dutes order by id desc limit ${page},${size};`
     await query(getDutesSql).then(async res => {
       for(let i in res) {
-        let permission_ids = res[i].permission_id.split(','),permission_id = []
-        for(let n in permission_ids) {
-          let selectPermissionByIdSql = `SELECT * FROM permissions WHERE id=${permission_ids[n]}`
-          await query(selectPermissionByIdSql).then(res => {
-            permission_id.push(res[0].label)
-          }).catch(err => {reject(err)})
-        }
+        let permission_id = []
+        let selectPermissionsSql = `SELECT * FROM permissions WHERE id in (${res[i].permission_id});`
+        await query(selectPermissionsSql).then(res => {
+          for(let k in res) {
+            permission_id.push(res[k].label)
+          }
+        }).catch(err => {reject(err)})
         res[i].permission_id = permission_id.join('，')
       }
       resolve(res)
@@ -136,13 +136,13 @@ let getRoleList = val => {
           res[i].duty = dutys[0].duty_name
           return dutys[0]
         }).then(async dutys => {
-          let permission_ids = dutys.permission_id.split(','),permission_id = []
-          for(let n in permission_ids) {
-            let selectPermissionByIdSql = `SELECT * FROM permissions WHERE id=${permission_ids[n]}`
-            await query(selectPermissionByIdSql).then(permissions => {
-              permission_id.push(permissions[0].label)
-            }).catch(err => {reject(err)})
-          }
+          let permission_id = []
+          let selectPermissionsSql = `SELECT * FROM permissions WHERE id in (${dutys.permission_id});`
+          await query(selectPermissionsSql).then(permissions => {
+            for(let k in permissions) {
+              permission_id.push(permissions[k].label)
+            }
+          }).catch(err => {reject(err)})
           res[i].permission = permission_id.join('，')
         }).catch(err => {reject(err)})
       }
