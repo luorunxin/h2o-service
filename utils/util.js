@@ -43,5 +43,47 @@ module.exports = {
       date.getSeconds()<10?'0'+date.getSeconds():date.getSeconds()
     ]
     return [yyyy,MM,dd].join('-') +' '+ [hh,mm,ss].join(':')
+  },
+
+  /**
+   *  权限数据转换前端tree结构数组
+   */
+  setPermissionsToArray(arr) {
+    let target = []
+    if(Array.isArray(arr) && arr.length > 0) {
+      target = arr.filter(item => {return item.parent_id === 0})
+      target.forEach(item => {
+        let children = arr.filter(i => {return item.id === i.parent_id})
+        if(children.length>0) {
+          item.children = children
+          item.children.forEach(k => {
+            let child = arr.filter(i => {return k.id === i.parent_id})
+            if(child.length>0){
+              k.children = child
+            }
+          })
+        }
+      })
+    }
+    return target
+  },
+
+  /**
+   *  解析前端传过来pemissions数组
+   */
+  setPermissions(arr, target) {
+    if(Array.isArray(arr) && arr.length>0){
+      arr.forEach(item => {
+        let obj = {}
+        obj.id = item.id
+        obj.label = item.label
+        obj.identify = item.identify
+        obj.parent_id = item.parent_id
+        target.push(obj)
+        if(item.children && item.children.length>0) {
+          this.setPermissions(item.children, target)
+        }
+      })
+    }
   }
 }

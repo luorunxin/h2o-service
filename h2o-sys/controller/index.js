@@ -1,5 +1,7 @@
 const Goods = require('./goods')
+const Permissions = require('./permissions')
 
 module.exports = {
-  Goods
+  Goods,
+  Permissions
 }
