@@ -11,6 +11,14 @@ router.post('/login', async ctx => {
   })
 })
 
+router.post('/logout', async ctx => {
+  await Service.refreshToken(ctx.request.body).then(res => {
+    ctx.response.body = Util.setResult(res)
+  }).catch(err => {
+    ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
+  })
+})
+
 router.post('/refreshToken', async ctx => {
   await Service.refreshToken(ctx.request.body).then(res => {
     ctx.response.body = res
