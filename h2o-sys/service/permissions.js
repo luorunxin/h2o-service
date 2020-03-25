@@ -39,8 +39,15 @@ let deletePermissionById = val => {
       if(res.length>0){
         reject(Util.setResult({},'该权限存在子级，操作失败',412))
       }else{
-        let deletePermissionSql = `DELETE FROM permissions WHERE id=${val.id};`
-        await query(deletePermissionSql).then(res => {resolve()}).catch(err => {reject(Util.setResult({},'服务端发生错误',500,err))})
+        let selectDutyByPermissionIdSql = `SELECT * FROM dutes WHERE permission_id LIKE "%${val.id}%"`
+        await query(selectDutyByPermissionIdSql).then(async res => {
+          if(res.length>0){
+            reject(Util.setResult({},'该权限已在职务中使用，操作失败',412))
+          }else{
+            let deletePermissionSql = `DELETE FROM permissions WHERE id=${val.id};`
+            await query(deletePermissionSql).then(res => {resolve()}).catch(err => {reject(Util.setResult({},'服务端发生错误',500,err))})
+          }
+        }).catch(err => {reject(Util.setResult({},'服务端发生错误',500,err))})
       }
     }).catch(err => {reject(Util.setResult({},'服务端发生错误',500,err))})
   })
@@ -49,7 +56,7 @@ let deletePermissionById = val => {
 let addUpdateDuty = val => {
   return new Promise(async (resolve, reject) => {
     if(!val.id){
-      let insertDutySql = `INSERT INTO dutes (duty_name,permission_id,create_time) VALUES ("${val.duty_name}","${val.permission_id}",NOW());`
+      let insertDutySql = `INSERT INTO dutes (duty_name,permission_id,create_time) VALUES ("${val.duty_name}","${val.permission_id}",NOW())`
       await query(insertDutySql).then(res => {}).catch(err => {reject(err)})
     }else{
       let updateDutySql = `UPDATE dutes SET duty_name="${val.duty_name}",permission_id="${val.permission_id}" WHERE id=${val.id};`
@@ -102,20 +109,41 @@ let getDutyById = val => {
 }
 
 let deleteDutyById = val => {
-  let deleteDutyByIdSql = `DELETE FROM dutes WHERE id=${val.id};`
-  return query(deleteDutyByIdSql)
+  return new Promise(async (resolve, reject) => {
+    let selectRoleByDutyIdSql = `SELECT * FROM roles WHERE duty_id=${val.id};`
+    await query(selectRoleByDutyIdSql).then(async res => {
+      if(res.length>0){
+        reject(Util.setResult({},'该权限已在角色中使用，操作失败',412))
+      }else{
+        let deleteDutyByIdSql = `DELETE FROM dutes WHERE id=${val.id};`
+        await query(deleteDutyByIdSql).then(res => {
+          resolve()
+        }).catch(err => {Util.setResult({},'服务端发生错误',500,err)})
+      }
+    }).catch(err => {Util.setResult({},'服务端发生错误',500,err)})
+  })
 }
 
 let addUpdateRole = val => {
   return new Promise(async (resolve, reject) => {
     if(!val.id){
-      let insertRoleSql = `INSERT INTO roles (name,gender,phone,duty_id,create_time) VALUES ("${val.name}",${val.gender},"${val.phone}",${val.duty_id},NOW());`
-      await query(insertRoleSql).then(res => {}).catch(err => {reject(err)})
+      let selectRoleByPhoneSql = `SELECT * FROM roles WHERE phone="${val.phone}";`
+      await query(selectRoleByPhoneSql).then(async res => {
+        if(res.length>0){
+          resolve(Util.setResult({},'手机号已存在！',500,null))
+        }else{
+          let insertRoleSql = `INSERT INTO roles (name,gender,phone,password,duty_id,create_time) VALUES ("${val.name}",${val.gender},"${val.phone}","${val.password}",${val.duty_id},NOW());`
+          await query(insertRoleSql).then(res => {
+            resolve(Util.setResult({},'角色添加成功',200,null))
+          }).catch(err => {reject(err)})
+        }
+      }).catch(err => {reject(err)})
     }else{
-      let updateRoleSql = `UPDATE roles SET name="${val.name}",gender=${val.gender},phone="${val.phone}",duty_id=${val.duty_id} WHERE id=${val.id};`
-      await query(updateRoleSql).then(res => {}).catch(err => {reject(err)})
+      let updateRoleSql = `UPDATE roles SET name="${val.name}",gender=${val.gender},phone="${val.phone}",password="${val.password}",duty_id=${val.duty_id} WHERE id=${val.id};`
+      await query(updateRoleSql).then(res => {
+        resolve(Util.setResult({},'角色修改成功！',200,null))
+      }).catch(err => {reject(err)})
     }
-    resolve()
   })
 }
 

@@ -18,7 +18,7 @@ module.exports = {
     maxAge: 100,
     credentials: true,
     allowMethods: ['GET', 'POST', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'access_token','refresh_token'],
   },
 
   // 数据库配置

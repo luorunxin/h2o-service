@@ -85,5 +85,22 @@ module.exports = {
         }
       })
     }
+  },
+
+  /**
+   *  jsonwebtoken签名
+   */
+  tokenSecret() {
+    return 'h2o_token_secret'
+  },
+
+  /**
+   *  token验证路由白名单
+   */
+  tokenWhiteUrl() {
+    return [
+      '/login',
+      '/refreshToken'
+    ]
   }
 }

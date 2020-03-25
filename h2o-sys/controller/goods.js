@@ -1,10 +1,10 @@
 const Router = require('koa-router')
 const router = new Router()
-const Goods = require('../service')
+const Service = require('../service')
 const Util = require('../../utils/util')
 
 router.post('/goodsList', async ctx => {
-  await Goods.goodsList(ctx.request.body).then(res => {
+  await Service.goodsList(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
     ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
@@ -12,7 +12,7 @@ router.post('/goodsList', async ctx => {
 })
 
 router.post('/saveGoods', async ctx => {
-  await Goods.saveGoods(ctx.request.body).then(res => {
+  await Service.saveGoods(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
     ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
@@ -20,7 +20,7 @@ router.post('/saveGoods', async ctx => {
 })
 
 router.post('/getCategoryList', async ctx => {
-  await Goods.getCategoryList().then(res => {
+  await Service.getCategoryList().then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
     ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
@@ -28,7 +28,7 @@ router.post('/getCategoryList', async ctx => {
 })
 
 router.post('/getTypesList', async ctx => {
-  await Goods.getTypesList().then(res => {
+  await Service.getTypesList().then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
     ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
@@ -36,7 +36,7 @@ router.post('/getTypesList', async ctx => {
 })
 
 router.post('/getGoodsById', async ctx => {
-  await Goods.getGoodsById(ctx.request.body).then(res => {
+  await Service.getGoodsById(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
     ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
@@ -44,7 +44,7 @@ router.post('/getGoodsById', async ctx => {
 })
 
 router.post('/deleteGoodsById', async ctx => {
-  await Goods.deleteGoodsById(ctx.request.body).then(res => {
+  await Service.deleteGoodsById(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
     ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
