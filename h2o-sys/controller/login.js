@@ -2,6 +2,7 @@ const Router = require('koa-router')
 const router = new Router()
 const Service = require('../service')
 const Util = require('../../utils/util')
+const jwt = require('jsonwebtoken')
 
 global.loginAuth = []
 global.post = true
@@ -42,11 +43,17 @@ router.post('/refreshToken', async ctx => {
 })
 
 router.post('/deleteRoleById', async ctx => {
+  await Service.getRoleById(ctx.request.body).then(role => {
+    for(let i in global.loginAuth) {
+      jwt.verify(global.loginAuth[i], Util.tokenSecret(), (err, recoded) => {
+        if (!err && recoded.phone == role.phone) {
+          global.loginAuth.splice(i, 1)
+        }
+      })
+    }
+  })
   await Service.deleteRoleById(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
-    if(global.loginAuth.includes(ctx.request.headers.access_token)){
-      global.loginAuth.splice(global.loginAuth.indexOf(ctx.request.headers.access_token), 1)
-    }
   }).catch(err => {
     ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
   })
