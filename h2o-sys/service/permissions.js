@@ -91,18 +91,18 @@ let getDutyById = val => {
   return new Promise(async (resolve, reject) => {
     let getDutyByIdSql = `SELECT * FROM dutes WHERE id=${val.id};`
     await query(getDutyByIdSql).then(async res => {
-      let permission_id = []
-      let array = []
-      permission_id = res[0].permission_id.split(',').map(item => {return parseInt(item)})
-      for(let i in permission_id) {
-        let selectPermissionSql = `SELECT * FROM permissions WHERE parent_id=${permission_id[i]};`
-        await query(selectPermissionSql).then(res => {
-          if(res.length<1){
-            array.push(permission_id[i])
-          }
-        }).catch(err => {reject(err)})
-      }
-      res[0].permission_id = array
+      // let permission_id = []
+      // let array = []
+      let permission_id = res[0].permission_id.split(',').map(item => {return parseInt(item)})
+      // for(let i in permission_id) {
+      //   let selectPermissionSql = `SELECT * FROM permissions WHERE parent_id=${permission_id[i]};`
+      //   await query(selectPermissionSql).then(res => {
+      //     if(res.length<1){
+      //       array.push(permission_id[i])
+      //     }
+      //   }).catch(err => {reject(err)})
+      // }
+      res[0].permission_id = permission_id
       resolve(res[0])
     }).catch(err => {reject(err)})
   })

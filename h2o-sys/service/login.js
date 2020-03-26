@@ -7,8 +7,16 @@ const jwt = require('jsonwebtoken')
 let login = val => {
   return new Promise(async (resolve, reject) => {
     let checkLoginSql = `SELECT * FROM roles WHERE phone="${val.phone}" AND password="${val.password}";`
-    await query(checkLoginSql).then(res => {
+    await query(checkLoginSql).then(async res => {
       if(res.length > 0){
+        let selectDutySql = `SELECT * FROM dutes WHERE id=${res[0].duty_id};`
+        await query(selectDutySql).then(async duty => {
+          res[0].duty = duty[0]
+          let selectPermissionsSql = `SELECT * FROM permissions WHERE id in (${duty[0].permission_id});`
+          await query(selectPermissionsSql).then(ps => {
+            res[0].permissions = ps
+          }).catch(err => {reject(err)})
+        }).catch(err => {reject(err)})
         let user = {
           phone: res[0].phone,
           password: res[0].password,
@@ -20,7 +28,7 @@ let login = val => {
       }else{
         resolve(Util.setResult({},'账号或密码错误',412,null))
       }
-    }).catch(err => {reject(Util.setResult({},'服务端发生错误',500,err))})
+    }).catch(err => {reject(err)})
   })
 }
 
