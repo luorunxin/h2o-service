@@ -14,8 +14,8 @@ let login = val => {
           password: res[0].password,
           create_time: new Date()
         }
-        res[0].access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60})
-        res[0].refresh_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*2})
+        res[0].access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15})
+        res[0].refresh_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15*2})
         resolve(Util.setResult(res[0]))
       }else{
         resolve(Util.setResult({},'账号或密码错误',412,null))
@@ -48,7 +48,7 @@ let refreshToken = val => {
         password: val.password,
         create_time: new Date()
       }
-      let access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60})
+      let access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15})
       resolve(Util.setResult({access_token}))
     }
   })
