@@ -67,14 +67,6 @@ router.post('/addUpdateRole', async ctx => {
   })
 })
 
-router.post('/deleteRoleById', async ctx => {
-  await Service.deleteRoleById(ctx.request.body).then(res => {
-    ctx.response.body = Util.setResult(res)
-  }).catch(err => {
-    ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
-  })
-})
-
 router.post('/getRoleList', async ctx => {
   await Service.getRoleList(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)

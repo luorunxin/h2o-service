@@ -100,7 +100,8 @@ module.exports = {
   tokenWhiteUrl() {
     return [
       '/login',
-      '/refreshToken'
+      '/refreshToken',
+      '/logout'
     ]
   }
 }

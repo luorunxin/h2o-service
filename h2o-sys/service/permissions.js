@@ -113,7 +113,7 @@ let deleteDutyById = val => {
     let selectRoleByDutyIdSql = `SELECT * FROM roles WHERE duty_id=${val.id};`
     await query(selectRoleByDutyIdSql).then(async res => {
       if(res.length>0){
-        reject(Util.setResult({},'该权限已在角色中使用，操作失败',412))
+        reject(Util.setResult({},'该职务已在角色中使用，操作失败',412))
       }else{
         let deleteDutyByIdSql = `DELETE FROM dutes WHERE id=${val.id};`
         await query(deleteDutyByIdSql).then(res => {
@@ -148,8 +148,10 @@ let addUpdateRole = val => {
 }
 
 let deleteRoleById = val => {
-  let deleteRoleByIdSql = `DELETE FROM roles WHERE id=${val.id};`
-  return query(deleteRoleByIdSql)
+  return new Promise((resolve,reject) => {
+    let deleteRoleByIdSql = `DELETE FROM roles WHERE id=${val.id};`
+    query(deleteRoleByIdSql).then(res => {resolve()}).catch(err => {reject(err)})
+  })
 }
 
 let getRoleList = val => {
