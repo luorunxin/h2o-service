@@ -13,6 +13,7 @@ app.ws.use((ctx, next) => {
 });
 
 app.ws.use(route.all('/service', ctx => {
+  console.log('service',global.loginAuth)
   clients.push({ctx})
   // ctx.websocket.send('已连接');
   ctx.websocket.on('message', msg => {

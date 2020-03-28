@@ -6,6 +6,24 @@ const jwt = require('jsonwebtoken')
 
 let login = val => {
   return new Promise(async (resolve, reject) => {
+    let flag = false
+    for(let i in global.loginAuth){
+      let err = await new Promise(reso => {
+        jwt.verify(global.loginAuth[i], Util.tokenSecret(), (err,recoded) => {
+          if(!err && recoded.phone==val.phone) {
+            reso(true)
+          }
+        })
+      })
+      if(err){
+        flag = true
+        break
+      }
+    }
+    if(flag){
+      resolve(Util.setResult({},'此账号正在登陆中',412,null))
+      return
+    }
     let checkLoginSql = `SELECT * FROM roles WHERE phone="${val.phone}" AND password="${val.password}";`
     await query(checkLoginSql).then(async res => {
       if(res.length > 0){
@@ -19,16 +37,35 @@ let login = val => {
         }).catch(err => {reject(err)})
         let user = {
           phone: res[0].phone,
-          password: res[0].password,
-          create_time: new Date()
+          password: res[0].password
         }
         res[0].access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15})
         res[0].refresh_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15*2})
         resolve(Util.setResult(res[0]))
+        global.loginAuth.push(res[0].access_token)
       }else{
         resolve(Util.setResult({},'账号或密码错误',412,null))
       }
     }).catch(err => {reject(err)})
+  })
+}
+
+let logout = val => {
+  return new Promise(async (resolve) => {
+    for(let i in global.loginAuth){
+      let err = await new Promise(re => {
+        jwt.verify(global.loginAuth[i], Util.tokenSecret(), (err,recoded) => {
+          if(!err && recoded.phone==val.phone) {
+            global.loginAuth.splice(i,1);
+            re(true)
+          }
+        })
+      })
+      if(err){
+        break
+      }
+    }
+    resolve(Util.setResult({},'请重新登陆!',401,null))
   })
 }
 
@@ -54,7 +91,6 @@ let refreshToken = val => {
       let user = {
         phone: val.phone,
         password: val.password,
-        create_time: new Date()
       }
       let access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15})
       resolve(Util.setResult({access_token}))
@@ -64,5 +100,6 @@ let refreshToken = val => {
 
 module.exports = {
   login,
+  logout,
   refreshToken
 }

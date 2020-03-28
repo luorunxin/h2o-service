@@ -12,12 +12,13 @@ module.exports = {
       }
     }
   },
-  setResult(res,msg,sta,err) {
+  setResult(res,msg,sta,err,total) {
     return {
       result: res || {},
       message: msg || 'ok',
       status: sta || 200,
-      error: err || null
+      error: err || null,
+      total: total || null
     }
   },
   uuid() {
