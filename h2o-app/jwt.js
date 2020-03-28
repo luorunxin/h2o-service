@@ -1,14 +1,14 @@
 const Jwt = require('jsonwebtoken')
-const Util = require('./util')
+const Util = require('../utils/util')
 
 module.exports = {
   check: () => {
     return async (ctx,next) => {
-      if(Util.tokenWhiteUrl().includes(ctx.request.url)){
+      if(Util.appTokenWhiteUrl().includes(ctx.request.url)){
         await next()
       }else{
-        if(global.loginAuth && !global.loginAuth.includes(ctx.request.headers.access_token)){
-          global.post = false
+        if(global.users && !global.users.includes(ctx.request.headers.access_token)){
+          global.user_post = false
           ctx.response.status = 401
           ctx.response.body = Util.setResult({},'请重新登陆！',401,null)
           return

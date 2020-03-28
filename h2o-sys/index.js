@@ -7,7 +7,7 @@ const session = require('koa-session');
 const config = require('../config/default.config')
 const { getIPAdress } = require('../utils/util')
 const routes = require('./controller')
-const Jwt = require('../utils/jwt')
+const Jwt = require('./jwt')
 
 const app = new Koa()
 

@@ -7,7 +7,7 @@ const session = require('koa-session');
 const config = require('../config/default.config')
 const { getIPAdress } = require('../utils/util')
 const routes = require('./controller')
-const Jwt = require('../utils/jwt')
+const Jwt = require('./jwt')
 
 const app = new Koa()
 
@@ -34,7 +34,7 @@ app.use(bodyParser())
 
 app.use(cors(config.cors))
 
-// app.use(Jwt.check())
+app.use(Jwt.check())
 
 for(let k in routes){
   app.use(routes[k].routes()).use(routes[k].allowedMethods())

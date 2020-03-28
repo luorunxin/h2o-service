@@ -104,5 +104,17 @@ module.exports = {
       '/refreshToken',
       '/logout'
     ]
+  },
+
+  /**
+   * app路由白名单
+   */
+  appTokenWhiteUrl() {
+    return [
+      '/login',
+      '/refreshToken',
+      '/logout',
+      '/goodsList'
+    ]
   }
 }
