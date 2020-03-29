@@ -13,6 +13,9 @@ let login = val => {
           if(!err && recoded.phone==val.phone) {
             reso(true)
           }
+          if(err){
+            global.loginAuth.splice(i,1)
+          }
         })
       })
       if(err){
@@ -58,6 +61,9 @@ let logout = val => {
           if(!err && recoded.phone==val.phone) {
             global.loginAuth.splice(i,1);
             re(true)
+          }
+          if(err){
+            global.loginAuth.splice(i,1);
           }
         })
       })

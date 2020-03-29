@@ -10,7 +10,7 @@ router.post('/login', async ctx => {
   await Service.login(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
-    if(err.status == 401) ctx.response.status = 401
+    // if(err.status == 401) ctx.response.status = 401
     ctx.response.body = err
   })
 })
@@ -19,7 +19,7 @@ router.post('/refreshToken', async ctx => {
   await Service.refreshToken(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
-    if(err.status == 401) ctx.response.status = 401
+    // if(err.status == 401) ctx.response.status = 401
     ctx.response.body = err
   })
 })
@@ -28,7 +28,7 @@ router.post('/logout', async ctx => {
   await Service.logout(ctx.request.headers).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
-    if(err.status == 401) ctx.response.status = 401
+    // if(err.status == 401) ctx.response.status = 401
     ctx.response.body = err
   })
 })
