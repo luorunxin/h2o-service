@@ -6,31 +6,118 @@ const { getIPAdress } = require('../utils/util')
 
 const app = kw(new Koa())
 
-let clients = []
+let clients = [],service = [],ongoing = []
 
 app.ws.use((ctx, next) => {
   return next(ctx);
 });
 
 app.ws.use(route.all('/service', ctx => {
-  console.log('service',global.loginAuth)
-  clients.push({ctx})
-  // ctx.websocket.send('已连接');
   ctx.websocket.on('message', msg => {
     if(msg === '791618513') return
-    if(!clients[clients.length-1].token) {
-      clients[clients.length-1].token = JSON.parse(msg).token
-    }
-    for(let i in clients){
-      if(clients[i].token == JSON.parse(msg).token) continue
-      if(JSON.parse(msg).message) clients[i].ctx.websocket.send(JSON.parse(msg).message)
+    msg = JSON.parse(msg)
+    let flag = true
+    if(msg.type === 'user'){
+      for(let c in clients){
+        if(clients[c].access_token = msg.access_token){
+          flag = false
+          break
+        }
+      }
+      if(flag){
+        msg.ctx = ctx
+        clients.push(msg)
+      }
+      if(msg.message){
+        let isGoing = true
+        for(let o in ongoing){
+          if(ongoing[o].user.access_token === msg.access_token){
+            ongoing[o].service.ctx.websocket.send(msg)
+            isGoing = false
+            break
+          }
+        }
+        if(isGoing){
+          if(service.length>0){
+            for(let s in service){
+              service[s].ctx.websocket.send(msg)
+            }
+          }else{
+            for(let o in ongoing){
+              ongoing[o].service.ctx.websocket.send(msg)
+            }
+          }
+        }
+      }
+    }else{
+      for(let s in service){
+        if(service[s].access_token = msg.access_token){
+          flag = false
+          break
+        }
+      }
+      if(flag){
+        msg.ctx = ctx
+        service.push(msg)
+      }
+      if(msg.message){
+        let isGoing = true
+        for(let o in ongoing){
+          if(ongoing[o].service.access_token === msg.access_token){
+            ongoing[o].user.ctx.websocket.send(msg.message)
+            isGoing = false
+            break
+          }
+        }
+        if(isGoing){
+          for(let c in clients){
+            if(clients[c].access_token === msg.user.access_token){
+              let obj = {
+                user: clients[c],
+                service: msg
+              }
+              ongoing.push(obj)
+              clients[c].ctx.websocket.send(msg.message)
+              clients.splice(c,1)
+              service.splice(service.indexOf(msg),1)
+              break
+            }
+          }
+        }
+      }
     }
   });
   ctx.websocket.on('close', msg => {
+    let flag = false
     for(let i in clients) {
       if(ctx == clients[i].ctx){
-        console.log('关闭: '+clients[i].token)
+        console.log('用户: '+clients[i].phone+'关闭')
         clients.splice(i, 1)
+        flag = true
+        break
+      }
+    }
+    if(flag) return
+    for(let i in service) {
+      if(ctx == service[i].ctx){
+        console.log('客服: '+service[i].phone+'关闭')
+        service.splice(i, 1)
+        flag = true
+        break
+      }
+    }
+    if(flag) return
+    for(let i in ongoing) {
+      if(ctx == ongoing[i].user.ctx){
+        console.log('用户: '+ongoing[i].user.phone+'关闭')
+        service.push(ongoing[i].service)
+        ongoing.splice(i, 1)
+        break
+      }
+      if(ctx == ongoing[i].service.ctx){
+        console.log('客服: '+ongoing[i].service.phone+'关闭')
+        clients.push(ongoing[i].user)
+        ongoing.splice(i, 1)
         break
       }
     }

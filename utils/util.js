@@ -114,7 +114,8 @@ module.exports = {
       '/login',
       '/refreshToken',
       '/logout',
-      '/goodsList'
+      '/goodsList',
+      '/getGoodsById'
     ]
   }
 }
