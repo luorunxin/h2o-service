@@ -52,7 +52,7 @@ let login = val => {
 }
 
 let refreshToken = val => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if(!global.user_post) {
       reject(Util.setResult({},'请重新登陆！',401, null))
       global.user_post = true
