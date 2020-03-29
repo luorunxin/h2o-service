@@ -11,4 +11,12 @@ router.post('/goodsList', async ctx => {
   })
 })
 
+router.post('/getGoodsById', async ctx => {
+  await Service.getGoodsById(ctx.request.body).then(res => {
+    ctx.response.body = Util.setResult(res)
+  }).catch(err => {
+    ctx.response.body = Util.setResult({},'服务端发生错误',500,err)
+  })
+})
+
 module.exports = router

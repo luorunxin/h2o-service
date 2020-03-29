@@ -9,21 +9,28 @@ let login = val => {
       reject(Util.setResult({},'验证码错误',412,null))
       return
     }
-    let err = await new Promise(resol => {
-      for(let i in global.users){
-        jwt.verify(global.users[i], Util.tokenSecret(), (err, recoded) => {
-          if(!err && recoded.phone == val.phone) {
-            resol(true)
-          }else{
-            resol(false)
-          }
-        })
-      }
-    })
-    if(err) {
-      reject(Util.setResult({},'此账号正在登陆中',412,null))
-      return
+    for(let i in global.users){
+      jwt.verify(global.users[i], Util.tokenSecret(), (err, recoded) => {
+        if(!err && recoded.phone == val.phone) {
+          global.users.splice(i,1)
+        }
+      })
     }
+    // let err = await new Promise(resol => {
+    //   for(let i in global.users){
+    //     jwt.verify(global.users[i], Util.tokenSecret(), (err, recoded) => {
+    //       if(!err && recoded.phone == val.phone) {
+    //         resol(true)
+    //       }else{
+    //         resol(false)
+    //       }
+    //     })
+    //   }
+    // })
+    // if(err) {
+    //   reject(Util.setResult({},'此账号正在登陆中',412,null))
+    //   return
+    // }
     let selectUserByPhoneSql = `SELECT * FROM user WHERE phone="${val.phone}";`
     let id = Util.uuid()
     await query(selectUserByPhoneSql).then(res => {

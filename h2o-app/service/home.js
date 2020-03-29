@@ -28,6 +28,37 @@ let goodsList = val => {
   })
 }
 
+let getGoodsById = val => {
+  return new Promise(async (resolve, reject) => {
+    let selectGoodsSql = `SELECT * FROM goods WHERE id="${val.id}";`
+    await query(selectGoodsSql).then(async res => {
+      res = res[0]
+      res.payment_number = 100
+      res.monthly_sales = 1000
+      let selectGoodsImagesSql = `SELECT * FROM goods_images WHERE goods_id="${val.id}";`
+      await query(selectGoodsImagesSql).then(images => {
+        res.images = images
+      }).catch(err => {
+        reject(err)
+      })
+      let selectGoodsAmountsSql = `SELECT * FROM goods_amount WHERE goods_id="${val.id}";`
+      await query(selectGoodsAmountsSql).then(amounts => {
+        res.amounts = amounts
+      }).catch(err => {
+        reject(err)
+      })
+      let selectGoodsTypesSql = `SELECT * FROM goods_type WHERE goods_id="${val.id}";`
+      await query(selectGoodsTypesSql).then(type => {
+        res.type = type
+      }).catch(err => {
+        reject(err)
+      })
+      resolve(res)
+    }).catch(err => reject(err))
+  })
+}
+
 module.exports = {
-  goodsList
+  goodsList,
+  getGoodsById
 }
