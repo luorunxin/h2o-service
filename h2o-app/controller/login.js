@@ -7,6 +7,8 @@ global.users = []
 global.user_post = true
 
 router.post('/login', async ctx => {
+  ctx.request.body.origin = ctx.request.headers.origin
+  ctx.request.body.userAgent = ctx.request.headers['user-agent']
   await Service.login(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
