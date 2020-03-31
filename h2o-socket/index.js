@@ -12,15 +12,20 @@ app.ws.use((ctx, next) => {
   return next(ctx);
 });
 
-app.ws.use(route.all('/service', ctx => {
+app.ws.use(route.all('/service', async ctx => {
   ctx.websocket.on('message', msg => {
     if(msg === '791618513') return
     msg = JSON.parse(msg)
-    console.log(msg)
     if(msg.type === 'user'){
       let flag = true
       for(let c in clients){
-        if(clients[c].access_token = msg.access_token){
+        if(clients[c].access_token === msg.access_token){
+          flag = false
+          break
+        }
+      }
+      for(let o in ongoing){
+        if(ongoing[o].user.access_token === msg.access_token){
           flag = false
           break
         }
@@ -56,7 +61,13 @@ app.ws.use(route.all('/service', ctx => {
     }else{
       let flag = true
       for(let s in service){
-        if(service[s].access_token = msg.access_token){
+        if(service[s].access_token === msg.access_token){
+          flag = false
+          break
+        }
+      }
+      for(let o in ongoing){
+        if(ongoing[o].service.access_token === msg.access_token){
           flag = false
           break
         }
@@ -78,17 +89,28 @@ app.ws.use(route.all('/service', ctx => {
         if(isGoing){
           for(let c in clients){
             if(clients[c].access_token === msg.user.access_token){
-              let obj = {
-                user: clients[c],
-                service: msg
+              for(let s in service){
+                if(service[s].phone === msg.phone){
+                  let obj = {
+                    user: clients[c],
+                    service: service[s]
+                  }
+                  ongoing.push(obj)
+                  clients[c].ctx.websocket.send(msg.message)
+                  clients.splice(c,1)
+                  service.splice(s,1)
+                  flag = true
+                  break
+                }
               }
-              ongoing.push(obj)
-              clients[c].ctx.websocket.send(msg.message)
-              clients.splice(c,1)
-              service.splice(service.indexOf(msg),1)
-              flag = true
               break
             }
+          }
+          for(let s in service){
+            service[s].ctx.websocket.send(JSON.stringify({
+              isMatching:true,
+              phone: msg.user.phone
+            }))
           }
         }
       }
@@ -99,6 +121,12 @@ app.ws.use(route.all('/service', ctx => {
     for(let i in clients) {
       if(ctx == clients[i].ctx){
         console.log('未连接用户: '+clients[i].phone+'关闭')
+        for(let s in service){
+          service[s].ctx.websocket.send(JSON.stringify({
+            isMatching:true,
+            phone: clients[i].phone
+          }))
+        }
         clients.splice(i, 1)
         flag = true
         break
@@ -118,6 +146,12 @@ app.ws.use(route.all('/service', ctx => {
       if(ctx == ongoing[i].user.ctx){
         console.log('连接用户: '+ongoing[i].user.phone+'关闭')
         service.push(ongoing[i].service)
+        for(let s in service){
+          service[s].ctx.websocket.send(JSON.stringify({
+            isMatching:true,
+            phone: ongoing[i].user.phone
+          }))
+        }
         ongoing.splice(i, 1)
         break
       }

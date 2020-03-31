@@ -12,6 +12,8 @@ let login = val => {
         jwt.verify(global.loginAuth[i], Util.tokenSecret(), (err,recoded) => {
           if(!err && recoded.phone==val.phone) {
             reso(true)
+          }else{
+            reso(false)
           }
           if(err){
             global.loginAuth.splice(i,1)
@@ -42,8 +44,8 @@ let login = val => {
           phone: res[0].phone,
           password: res[0].password
         }
-        res[0].access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15})
-        res[0].refresh_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15*2})
+        res[0].access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*60})
+        res[0].refresh_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*60*2})
         resolve(Util.setResult(res[0]))
         global.loginAuth.push(res[0].access_token)
       }else{
@@ -61,6 +63,8 @@ let logout = val => {
           if(!err && recoded.phone==val.phone) {
             global.loginAuth.splice(i,1);
             re(true)
+          }else{
+            re(false)
           }
           if(err){
             global.loginAuth.splice(i,1);
@@ -98,7 +102,7 @@ let refreshToken = val => {
         phone: val.phone,
         password: val.password,
       }
-      let access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*15})
+      let access_token = jwt.sign(user,Util.tokenSecret(),{expiresIn: 60*60})
       resolve(Util.setResult({access_token}))
     }
   })
