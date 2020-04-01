@@ -38,7 +38,7 @@ let login = val => {
         id = res[0].id
       }
     }).catch(err => reject(Util.setResult({},'服务器发生错误',500,err)))
-    let loginSql = `INSERT INTO user (id,phone,login_time,origin,user_agent) VALUES ("${id}","${val.phone}",NOW(),"${val.origin}","${val.userAgent}");`
+    let loginSql = `INSERT INTO user (id,phone,login_time,origin,user_agent,location) VALUES ("${id}","${val.phone}",NOW(),"${val.origin}","${val.userAgent}","${val.location}");`
     await query(loginSql).then(res => {
       let user = {
         phone: val.phone

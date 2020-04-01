@@ -59,6 +59,16 @@ app.ws.use(route.all('/service', async ctx => {
         }
       }
     }else{
+      if(msg.serviceClose) {
+        for(let o in ongoing){
+          if(ongoing[o].user.access_token === msg.access_token){
+            clients.push(ongoing[o].user)
+            service.push(ongoing[o].service)
+            ongoing.splice(o,1)
+            return
+          }
+        }
+      }
       let flag = true
       for(let s in service){
         if(service[s].access_token === msg.access_token){
