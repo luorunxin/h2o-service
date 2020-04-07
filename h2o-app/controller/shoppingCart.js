@@ -4,6 +4,7 @@ const Service = require('../service')
 const Util = require('../../utils/util')
 
 router.post('/addShoppingCart', async ctx => {
+  ctx.request.body.phone = Util.getUserByToken(ctx.request.headers.access_token)
   await Service.addShoppingCart(ctx.request.body).then(res => {
     ctx.response.body = res
   }).catch(err => {
@@ -12,6 +13,7 @@ router.post('/addShoppingCart', async ctx => {
 })
 
 router.post('/getShoppingCartList', async ctx => {
+  ctx.request.body.phone = Util.getUserByToken(ctx.request.headers.access_token)
   await Service.getShoppingCartList(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
@@ -20,6 +22,7 @@ router.post('/getShoppingCartList', async ctx => {
 })
 
 router.post('/deleteShoppingCartById', async ctx => {
+  ctx.request.body.phone = Util.getUserByToken(ctx.request.headers.access_token)
   await Service.deleteShoppingCartById(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
@@ -28,6 +31,7 @@ router.post('/deleteShoppingCartById', async ctx => {
 })
 
 router.post('/deleteShoppingCart', async ctx => {
+  ctx.request.body.phone = Util.getUserByToken(ctx.request.headers.access_token)
   await Service.deleteShoppingCart(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {
@@ -36,6 +40,7 @@ router.post('/deleteShoppingCart', async ctx => {
 })
 
 router.post('/updateShoppingCartById', async ctx => {
+  ctx.request.body.phone = Util.getUserByToken(ctx.request.headers.access_token)
   await Service.updateShoppingCartById(ctx.request.body).then(res => {
     ctx.response.body = Util.setResult(res)
   }).catch(err => {

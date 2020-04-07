@@ -1,16 +1,17 @@
-# h2o
+# h2o管理系统
+---
+> 从零架构，结构清晰，逻辑清晰
 
-> h2o service
+## 主要技术
+---
+> node + koa2 + koa-router + koa-websocket + jsonwebtoken + mysql
 
 ## Build Setup
-
 ``` bash
 # install dependencies
 $ yarn install
 
-# 启动项目
+# start project
 $ yarn start
 
 ```
-
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).

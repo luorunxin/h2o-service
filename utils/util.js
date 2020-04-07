@@ -1,4 +1,5 @@
 const os = require('os')
+const jwt = require('jsonwebtoken')
 module.exports = {
   getIPAdress() {
     var interfaces = os.networkInterfaces();
@@ -117,5 +118,16 @@ module.exports = {
       '/goodsList',
       '/getGoodsById'
     ]
+  },
+
+  /**
+   *  通过token获取当前账号
+   */
+  getUserByToken(token) {
+    return jwt.verify(token, this.tokenSecret(), (err, recoded) => {
+      if(!err){
+        return recoded.phone
+      }
+    })
   }
 }
