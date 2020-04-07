@@ -4,6 +4,9 @@
 ## 主要技术
 > node + koa2 + koa-router + koa-websocket + jsonwebtoken + mysql
 
+## 说明
+1级目录下，h2o.sql文件是项目的数据库数据+结构，请启动mysql数据，使用Navicat工具运行sql，才能保证项目的数据交互
+
 ## h2o商城移动端
 <https://github.com/luorunxin/h2o-app>
 
