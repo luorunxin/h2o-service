@@ -4,6 +4,15 @@
 ## 主要技术
 > node + koa2 + koa-router + koa-websocket + jsonwebtoken + mysql
 
+## h2o商城移动端
+<https://github.com/luorunxin/h2o-app>
+
+## h2o管理系统
+<https://github.com/luorunxin/h2o-sys>
+
+## 私信
+有任何问题或者技术可以找我沟通，加我QQ：791618513，加时请备注"github"
+
 ## Build Setup
 ``` bash
 # install dependencies
